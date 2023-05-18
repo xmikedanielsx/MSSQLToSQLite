@@ -17,6 +17,7 @@ Basically, that's it!
 In order to read the SQL server DB schema, I was mainly using the pseudo information_schema.table table. You can find more information about it on the Internet if you want.
 
 ## ***<u>History</u>***
+* 2023-05-18 - Released 2023.05.18.01 - Upgraded to .NET 6 as well as added ability to treat UUID/GUID as a string
 * 13th June, 2008: Initial version
 * 08th July, 2008: v 1.2
 Fixed a bug that caused unique indexes to be generated as non-unique in some cases
