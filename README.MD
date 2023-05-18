@@ -3,7 +3,7 @@ I needed to convert the existing SQL server databases to SQLite databases as par
 
 This is my attempt to solve the problem. I should warn you though that I did not have much time to test it on too many databases. In any case - the source code is very well documented and easy to understand, so if you do have a problem it should be relatively easy to fix. (Please send me the fixed source code. If you do so, I can update the software so that everybody can enjoy it.)
 
-## ***<u>*Using the Code</u>****
+## ***<u>Using the Code</u>***
 The code is split between a dataaccess project (class library) that contains the conversion code itself and a converter project (WinForms) that drives the conversion code and provides a simple UI for user interaction.
 
 The main class that performs the conversion is the sqlservertosqlite class. It does the conversion by doing the following steps:
@@ -13,10 +13,10 @@ Preparing an empty sqlite database file with the schema that was read from SQL s
 Copying rows for each table from the SQL server database to the sqlite database.
 Basically, that's it!
 
-## ***<u>*Points of Interest</u>****
+## ***<u>Points of Interest</u>***
 In order to read the SQL server DB schema, I was mainly using the pseudo information_schema.table table. You can find more information about it on the Internet if you want.
 
-##History
+## ***<u>History</u>***
 * 13th June, 2008: Initial version
 * 08th July, 2008: v 1.2
 Fixed a bug that caused unique indexes to be generated as non-unique in some cases
