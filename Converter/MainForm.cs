@@ -234,7 +234,7 @@ namespace Converter
             if (!cbxEncrypt.Checked)
                 password = null;
             SqlServerToSQLite.ConvertSqlServerToSQLiteDatabase(sqlConnString, sqlitePath, password, handler, 
-                selectionHandler, viewFailureHandler, cbxTriggers.Checked, createViews);
+                selectionHandler, viewFailureHandler, cbxTriggers.Checked, createViews, chkBox_treatGuidAsString.Checked);
         }
 
         #endregion
