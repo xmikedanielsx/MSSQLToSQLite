@@ -38,6 +38,12 @@ namespace ClassLibrary
             _cancelled = true;
         }
 
+        public static bool isSilent = true;
+        public SqlServerToSQLite(bool isSil = true)
+        {
+            isSilent = isSil;
+        }
+
         /// <summary>
         /// This method takes as input the connection string to an SQL Server database
         /// and creates a corresponding SQLite database file with a schema derived from
@@ -51,32 +57,42 @@ namespace ClassLibrary
         /// tables to convert</param>
         /// <remarks>The method continues asynchronously in the background and the caller returned
         /// immediatly.</remarks>
+        /// 
         public static void ConvertSqlServerToSQLiteDatabase(string sqlServerConnString,
             string sqlitePath, string password, SqlConversionHandler handler,
             SqlTableSelectionHandler selectionHandler,
             FailedViewDefinitionHandler viewFailureHandler,
-            bool createTriggers, bool createViews, bool treatGuidAsString)
+            bool createTriggers, bool createViews, bool treatGuidAsString, bool isSil)
         {
+            isSilent = isSil;
             // Clear cancelled flag
             _cancelled = false;
 
-            WaitCallback wc = new WaitCallback(delegate(object state)
-            {
+            //WaitCallback wc = new WaitCallback(delegate(object state)
+            //{
                 try
                 {
                     _isActive = true;
                     ConvertSqlServerDatabaseToSQLiteFile(sqlServerConnString, sqlitePath, password, handler, selectionHandler, viewFailureHandler, createTriggers, createViews, treatGuidAsString);
                     _isActive = false;
-                    handler(true, true, 100, "Finished converting database");
+                    if(isSilent != true)
+                    {
+                        handler(true, true, 100, "Finished converting database");
+                    }
+                    
                 }
                 catch (Exception ex)
                 {
                     _log.Error("Failed to convert SQL Server database to SQLite database", ex);
                     _isActive = false;
-                    handler(true, false, 100, ex.Message);
+                    if(isSilent != true)
+                    {
+                        handler(true, false, 100, ex.Message);
+                    }
+                    
                 } // catch
-            });
-            ThreadPool.QueueUserWorkItem(wc);
+            //});
+            //ThreadPool.QueueUserWorkItem(wc);
         }
         #endregion
 
@@ -129,7 +145,11 @@ namespace ClassLibrary
             string password, SqlConversionHandler handler, bool treatGuidAsString)
         {
             CheckCancelled();
-            handler(false, true, 0, "Preparing to insert tables...");
+            if(isSilent != true)
+            {
+                handler(false, true, 0, "Preparing to insert tables...");
+            }
+            
             // _log.debug("preparing to insert tables ...");
 
             // Connect to the SQL Server database
@@ -172,8 +192,12 @@ namespace ClassLibrary
                                     {
                                         CheckCancelled();
                                         tx.Commit();
-                                        handler(false, true, (int)(100.0 * i / schema.Count),
+                                        if(isSilent != true)
+                                        {
+                                            handler(false, true, (int)(100.0 * i / schema.Count),
                                             "Added " + counter + " rows to table " + schema[i].TableName + " so far");
+                                        }
+                                        
                                         tx = sqconn.BeginTransaction();
                                     }
                                 } // while
@@ -182,7 +206,11 @@ namespace ClassLibrary
                             CheckCancelled();
                             tx.Commit();
 
-                            handler(false, true, (int)(100.0 * i / schema.Count), "Finished inserting rows for table " + schema[i].TableName);
+                            if(isSilent != true)
+                            {
+                                handler(false, true, (int)(100.0 * i / schema.Count), "Finished inserting rows for table " + schema[i].TableName);
+                            }
+                            
                             // _log.debug("finished inserting all rows for table [" + schema[i].TableName + "]");
                         }
                         catch (Exception ex)
@@ -495,7 +523,11 @@ namespace ClassLibrary
                     }
                     count++;
                     CheckCancelled();
-                    handler(false, true, (int)(count * 50.0 / schema.Tables.Count), "Added table " + dt.TableName + " to the SQLite database");
+                    if(isSilent != true)
+                    {
+                        handler(false, true, (int)(count * 50.0 / schema.Tables.Count), "Added table " + dt.TableName + " to the SQLite database");
+                    }
+                    
 
                     //// _log.debug("added schema for SQLite table [" + dt.TableName + "]");
                 } // foreach
@@ -517,7 +549,11 @@ namespace ClassLibrary
                         } // catch
                         count++;
                         CheckCancelled();
-                        handler(false, true, 50 + (int)(count * 50.0 / schema.Views.Count), "Added view " + vs.ViewName + " to the SQLite database");
+                        if(isSilent != true)
+                        {
+                            handler(false, true, 50 + (int)(count * 50.0 / schema.Views.Count), "Added view " + vs.ViewName + " to the SQLite database");
+                        }
+                        
 
                         // _log.debug("added schema for SQLite view [" + vs.ViewName + "]");
 
@@ -554,7 +590,12 @@ namespace ClassLibrary
                     updated.ViewSQL = vs.ViewSQL;
 
                     // Ask the user to supply the new view definition SQL statement
-                    string sql = handler(updated);
+                    string sql = null;
+                    if (isSilent != true)
+                    {
+                         sql = handler(updated);
+                    }
+                    
 
                     if (sql == null)
                         return; // Discard the view
@@ -841,7 +882,11 @@ namespace ClassLibrary
                     tables.Add(ts);
                     count++;
                     CheckCancelled();
-                    handler(false, true, (int)(count * 50.0 / tableNames.Count), "Parsed table " + tname);
+                    if(isSilent != true)
+                    {
+                        handler(false, true, (int)(count * 50.0 / tableNames.Count), "Parsed table " + tname);
+                    }
+                    
 
                     // _log.debug("parsed table schema for [" + tname + "]");
                 } // foreach
@@ -887,7 +932,11 @@ namespace ClassLibrary
 
                         count++;
                         CheckCancelled();
-                        handler(false, true, 50 + (int)(count * 50.0 / views.Count), "Parsed view " + vs.ViewName);
+                        if(isSilent != true)
+                        {
+                            handler(false, true, 50 + (int)(count * 50.0 / views.Count), "Parsed view " + vs.ViewName);
+                        }
+                        
 
                         // _log.debug("parsed view schema for [" + vs.ViewName + "]");
                     } // while

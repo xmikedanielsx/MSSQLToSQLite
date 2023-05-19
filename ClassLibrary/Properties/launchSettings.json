@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ClassLibrary": {
+      "commandName": "Project",
+      "commandLineArgs": "--conn-type \"win\"\r\n--conn-server \"localhost\"\r\n--conn-db \"BSC-BillQuick2021\"\r\n--conn-user \"sa\"\r\n--conn-pass \"Test123!\"\r\n--sqlite-path \"C:\\ILoveYourPhatMom\\somedb.db\""
+    }
+  }
+}
